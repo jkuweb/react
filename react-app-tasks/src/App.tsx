@@ -4,28 +4,30 @@ import { initialTasks } from "./data";
 import { TasksModel } from "./data-models";
 import { ListTask } from "./ListTask";
 
-let nextId = 2;
+let nextId = initialTasks.length;
 
 function App() {
-  const [tasks, setTasks] = React.useState<TasksModel[]>(initialTasks);
+  const [tasks, dispatch] = React.useReducer(tasksReducer, initialTasks);
+
   const handleAddTask = (text: string) => {
-    setTasks([...tasks, { id: ++nextId, text: text, done: false }]);
+    dispatch({
+      type: "added",
+      id: nextId++,
+      text: text,
+    });
   };
-  console.log(tasks);
   const handleChangeTask = (task: TasksModel) => {
-    setTasks(
-      tasks.map((t) => {
-        if (t.id === task.id) {
-          return task;
-        } else {
-          return t;
-        }
-      })
-    );
+    dispatch({
+      type: "changed",
+      task: task,
+    });
   };
 
   const handleOnDelete = (id: number) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    dispatch({
+      type: "deleted",
+      id: id,
+    });
   };
 
   return (
@@ -41,4 +43,33 @@ function App() {
   );
 }
 
+function tasksReducer(tasks:TasksModel[], action) {
+  switch (action.type) {
+    case "added": {
+      return [
+        ...tasks,
+        {
+          id: action.id,
+          text: action.text,
+          done: false,
+        },
+      ];
+    }
+    case "changed": {
+      return tasks.map((t) => {
+        if (t.id === action.task.id) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case "deleted": {
+      return tasks.filter((t) => t.id !== action.id);
+    }
+    default: {
+      throw Error("Unknown action: " + action.type);
+    }
+  }
+}
 export default App;
