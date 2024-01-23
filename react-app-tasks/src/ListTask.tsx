@@ -13,7 +13,7 @@ export const ListTask: React.FC<Props> = ({ tasks, onChange, onDelete }) => {
     <>
       <ul>
         {tasks.map((task) => (
-          <Task task={task} onChange={onChange} onDelete={onDelete} />
+          <Task key={task.id} task={task} onChange={onChange} onDelete={onDelete} />
         ))}
       </ul>
     </>
