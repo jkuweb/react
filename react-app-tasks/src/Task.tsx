@@ -39,7 +39,7 @@ export const Task: React.FC<Props> = ({ task, onChange, onDelete }) => {
 
   return (
     <>
-    <li key={task.id}>
+    <li>
         <input
           type="checkbox"
           checked={task.done}
