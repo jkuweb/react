@@ -1,11 +1,13 @@
 import React from "react"
+import { ExampleOne } from "./ExampleOne"
 
 function App() {
 
   return (
-    <>
-      <h1>React Memoize</h1>   
-    </>
+    <div style={{display:'grid', placeItems:'center', maxWidth:'500px'}}>
+      <h1>React Memoize</h1>  
+      <ExampleOne/> 
+    </div>
   )
 }
 
