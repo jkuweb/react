@@ -11,22 +11,28 @@ function App() {
 
   const handleAddTask = (text: string) => {
     dispatch({
-      type: "added",
-      id: nextId++,
-      text: text,
+      type: actionTypes.ADDED,
+      payload : {
+        id: nextId++,
+        text: text,
+      }
     });
   };
   const handleChangeTask = (task: TasksModel) => {
     dispatch({
-      type: "changed",
-      task: task,
+      type: actionTypes.CHANGED,
+      payload: {
+        task: task,
+      }
     });
   };
 
   const handleOnDelete = (id: number) => {
     dispatch({
-      type: "deleted",
-      id: id,
+      type: actionTypes.DELETED,
+      payload: {
+        id: id,
+      }
     });
   };
 
@@ -42,30 +48,38 @@ function App() {
     </>
   );
 }
-
-function tasksReducer(tasks:TasksModel[], action) {
+interface Action {
+  type: string
+  payload: any
+}
+const actionTypes = {
+  ADDED: 'added',
+  CHANGED: 'changed',
+  DELETED: 'deleted'
+}
+function tasksReducer(tasks:TasksModel[], action:Action): TasksModel[] {
   switch (action.type) {
-    case "added": {
+    case actionTypes.ADDED: {
       return [
         ...tasks,
         {
-          id: action.id,
-          text: action.text,
+          id: action.payload.id,
+          text: action.payload.text,
           done: false,
         },
       ];
     }
-    case "changed": {
+    case actionTypes.CHANGED: {
       return tasks.map((t) => {
-        if (t.id === action.task.id) {
-          return action.task;
+        if (t.id === action.payload.task.id) {
+          return action.payload.task;
         } else {
           return t;
         }
       });
     }
-    case "deleted": {
-      return tasks.filter((t) => t.id !== action.id);
+    case actionTypes.DELETED: {
+      return tasks.filter((t) => t.id !== action.payload.id);
     }
     default: {
       throw Error("Unknown action: " + action.type);
