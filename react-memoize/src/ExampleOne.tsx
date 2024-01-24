@@ -6,14 +6,21 @@ export const ExampleOne = () => {
     lastName: "querejeta",
   });
   const [count, setCount] = React.useState(0);
-  
-  /* SOLUCIÓN */ 
+
+  /* SOLUCIÓN */
   const mappedMemoized = useMemo(() => {
     return {
       firstName: user.name,
       lastName: user.lastName,
     };
   }, [user.name, user.lastName]);
+
+  const handleReset = React.useCallback(() => {
+    setUser({
+      name: "",
+      lastName: "",
+    });
+  }, []);
 
   return (
     <div style={{ marginTop: "4rem", display: "grid" }}>
@@ -34,15 +41,16 @@ export const ExampleOne = () => {
       <input
         type="text"
         value={user.lastName}
-        onChange={(e) =>
+        onChange={(e) => {
           setUser({
             ...user,
             lastName: e.target.value,
-          })
-        }
+          });
+        }}
       />
 
       {/* <MyChildComponent name={user.name} /> */}
+
       <MySecondComponent
         user={{
           // <-- nuevo objeto
@@ -53,6 +61,7 @@ export const ExampleOne = () => {
         /* SOLUCION */
         // user={mappedMemoized}
       />
+      <MythirdComponent user={mappedMemoized} onReset={handleReset} />
     </div>
   );
 };
@@ -90,12 +99,44 @@ interface User {
   };
 }
 const MySecondComponent: React.FC<User> = React.memo(({ user }) => {
-  console.log("MySecondComponent -> me estoy renderizando" + user);
+  //console.log("MySecondComponent -> me estoy renderizando" + user);
   return (
     <>
       <p>
         {user.firstName} {user.lastName}
       </p>
+    </>
+  );
+});
+
+// En este caso estamos pasando una callback, para que cuando pulse el
+// botón, el padre, actualice el estado.
+// Ahora lo que esta haciendo el componente padre es actualizar y volver
+// a renderizar el componente y en este caso crea una nueva función:
+//  setUser(
+//            {
+//             name: '',
+//              lastName: ''
+//            }
+//          )
+// Aunque la función sea la misma y no cambia, cada vez que se vuelve a
+// renderizar, vuelve a generar esa misma función.
+// SOLUCION (línea 10)
+interface UserType {
+  user: {
+    firstName: string;
+    lastName: string;
+  };
+  onReset: () => void;
+}
+const MythirdComponent: React.FC<UserType> = React.memo(({ user, onReset }) => {
+  console.log("MyThirdComponent -> me estoy renderizando" + user);
+  return (
+    <>
+      <p>
+        {user.firstName} {user.lastName}
+      </p>
+      <button onClick={onReset}>Reset</button>
     </>
   );
 });
