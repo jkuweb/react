@@ -1,0 +1,35 @@
+.header,
+.main {
+  max-width: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+}
+
+.header {
+  margin-bottom: 5rem;
+  gap: 3rem;
+}
+
+.header__search-form {
+  display: flex;
+} 
+
+.movie-result-list {
+  width: 100%;
+  list-style: none;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr))
+
+}
+
+.movie-result-list > li {
+  background-color: #035ab7b0;
+  display: grid;
+  place-items: center;
+}
+.movie-result-list > li> h3 {
+  text-align: center;
+}
