@@ -1,18 +1,7 @@
 import React from "react";
-import moviesResult from "./withResults.json";
+import { useMovies } from "./hooks/useMovies";
 import { Movies } from "./components/Movies";
 import "./App.css";
-
-export const useMovies = () => {
-  const movies = moviesResult.Search;
-  const mappedMovies = movies.map((movie) => ({
-    id: movie.imdbID,
-    title: movie.Title,
-    year: movie.Year,
-    image: movie.Poster,
-  }));
-  return { movies: mappedMovies };
-};
 
 export const App: React.FC = () => {
   const { movies } = useMovies();
@@ -31,3 +20,6 @@ export const App: React.FC = () => {
     </>
   );
 };
+// https://www.youtube.com/watch?v=GOEiMwDJ3lc&list=PLUofhDIg_38q4D0xNWp7FEHOTcZhjWJ29&index=5
+
+// 33:30 min
