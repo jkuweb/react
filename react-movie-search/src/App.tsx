@@ -1,49 +1,62 @@
-import React from "react";
+import { useState, useCallback } from "react";
 import { useMovies } from "./hooks/useMovies";
 import { Movies } from "./components/Movies";
 import { useSearch } from "./hooks/useSearch";
+import debounce from "just-debounce-it";
 import "./App.css";
 
 export const App: React.FC = () => {
-  const { search, setSearch: updateSearch, err: error } = useSearch();
-  const { movies, getMovies } = useMovies({ search });
+  const [sort, setSort] = useState(false);
 
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const { search, setSearch: updateSearch, err: error } = useSearch();
+  const { movies, loading, getMovies } = useMovies({ search, sort });
+
+  const debouncedGetMovies = useCallback(
+    debounce((search) => {
+      console.log("search", search);
+      getMovies({ search });
+    }, 300),
+    [getMovies]
+  );
+
+  const handleSubmit = (event) => {
     event.preventDefault();
-    // Forma no controlada (aquí no aparece pero user el useRef tb lo sería)
-    // const fields = Object.fromEntries(new window.FormData(event.currentTarget));
-    // Forma controlada -> es React quien controla
-    getMovies();
+    getMovies({ search });
+  };
+
+  const handleSort = () => {
+    setSort(!sort);
   };
 
   const handleChange = (event) => {
-    updateSearch(event.target.value);
+    const newSearch = event.target.value;
+    updateSearch(newSearch);
+    debouncedGetMovies(newSearch);
   };
 
   return (
-    <>
-      <header className="header">
-        <h1>Movie Search</h1>
-        <div className="header__search-form">
-          <form onSubmit={handleFormSubmit} className="form">
-            <input
-              name="query"
-              type="text"
-              value={search}
-              onChange={handleChange}
-              placeholder="avangers, start wars..."
-            />
-            <button>Search</button>
-          </form>
-          <div style={{ height: "16px" }}>
-            {error && <span style={{ color: "red" }}>{error}</span>}
-          </div>
-        </div>
+    <div className="page">
+      <header>
+        <h1>Buscador de películas</h1>
+        <form className="form" onSubmit={handleSubmit}>
+          <input
+            style={{
+              border: "1px solid transparent",
+              borderColor: error ? "red" : "transparent",
+            }}
+            onChange={handleChange}
+            value={search}
+            name="query"
+            placeholder="Avengers, Star Wars, The Matrix..."
+          />
+          <input type="checkbox" onChange={handleSort} checked={sort} />
+          <button type="submit">Buscar</button>
+        </form>
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </header>
-      <main className="main">
-        <Movies movies={movies} />
-      </main>
-    </>
+
+      <main>{loading ? <p>Cargando...</p> : <Movies movies={movies} />}</main>
+    </div>
   );
 };
 // https://www.youtube.com/watch?v=GOEiMwDJ3lc&list=PLUofhDIg_38q4D0xNWp7FEHOTcZhjWJ29&index=5

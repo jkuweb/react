@@ -1,27 +1,37 @@
-import React from "react";
-import withResults from "../withResults.json";
-import withoutResults from "../withoutResults.json";
+import { useRef, useState, useMemo, useCallback } from 'react'
+import { searchMovies } from '../services/movie';
 
+export const useMovies = ({ search, sort }) => {
+  const [movies, setMovies] = useState([])
+  const [loading, setLoading] = useState(false)
 
-export const useMovies = ({ search }) => {
-  console.log(search)
-  const [responseMovies, setResponseMovies] = React.useState([])
+  const [_error, setError] = useState(null)
+  const previousSearch = useRef(search)
 
-  const movies = responseMovies.Search;
-  const mappedMovies = movies?.map((movie) => ({
-    id: movie.imdbID,
-    title: movie.Title,
-    year: movie.Year,
-    image: movie.Poster,
-  }));
-  const getMovies = () => {
-    if (search) {
-      setResponseMovies(withResults)
-    } else {
-      setResponseMovies(withoutResults)
+  const getMovies = useCallback(async ({ search }) => {
+    if (search === previousSearch.current) return
+
+    try {
+      setLoading(true)
+      setError(null)
+      previousSearch.current = search
+      const newMovies = await searchMovies({ search })
+      setMovies(newMovies)
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
     }
-  }
-  return { movies: mappedMovies, getMovies };
+  }, [])
+
+  const sortedMovies = useMemo(() => {
+    if (!movies) return;
+    return sort
+      ? [...movies].sort((a, b) => a.title.localeCompare(b.title))
+      : movies
+  }, [sort, movies])
+
+  return { movies: sortedMovies, getMovies, loading }
 };
 
 
