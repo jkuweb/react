@@ -13,7 +13,6 @@ export const App: React.FC = () => {
 
   const debouncedGetMovies = useCallback(
     debounce((search) => {
-      console.log("search", search);
       getMovies({ search });
     }, 300),
     [getMovies]
