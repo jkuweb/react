@@ -1,12 +1,27 @@
-import moviesResult from "../withResults.json";
+import React from "react";
+import withResults from "../withResults.json";
+import withoutResults from "../withoutResults.json";
 
-export const useMovies = () => {
-  const movies = moviesResult.Search;
-  const mappedMovies = movies.map((movie) => ({
+
+export const useMovies = ({ search }) => {
+  console.log(search)
+  const [responseMovies, setResponseMovies] = React.useState([])
+
+  const movies = responseMovies.Search;
+  const mappedMovies = movies?.map((movie) => ({
     id: movie.imdbID,
     title: movie.Title,
     year: movie.Year,
     image: movie.Poster,
   }));
-  return { movies: mappedMovies };
+  const getMovies = () => {
+    if (search) {
+      setResponseMovies(withResults)
+    } else {
+      setResponseMovies(withoutResults)
+    }
+  }
+  return { movies: mappedMovies, getMovies };
 };
+
+

@@ -15,7 +15,7 @@ const ListOfMovies = ({ movies }) => {
 };
 
 const ErrorMoviesResult = ({ error }) => {
-  return <p>{error}</p>;
+  return <p>{error.Error}</p>;
 };
 
 export const Movies = ({ movies }) => {
